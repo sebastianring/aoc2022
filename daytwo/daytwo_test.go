@@ -16,3 +16,14 @@ func TestRockPaperScissor(t *testing.T) {
 	fmt.Println("Result from the test: ", result)
 	t.Log(result)
 }
+
+func TestRockPaperScissorPartTwo(t *testing.T) {
+	result, err := daytwo.RockPaperScissorPartTwo("data.txt")
+
+	if err != nil {
+		t.Fatal("Error: ", err)
+	}
+
+	fmt.Println("Result from the test: ", result)
+	t.Log(result)
+}
