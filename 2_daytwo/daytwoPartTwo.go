@@ -98,16 +98,19 @@ func PlayRockPaperScissorPartTwo(enemy hand, result forcedResult) int {
 	if result == draw {
 		player = enemy
 		sum += 3
+
 	} else if result == win {
-		player = winCondition[enemy]
-		sum += 6
-	} else {
 		for k, v := range winCondition {
 			if v == enemy {
 				player = k
 				break
 			}
 		}
+
+		sum += 6
+
+	} else {
+		player = winCondition[enemy]
 	}
 
 	pointMap := map[hand]int{
