@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestRuckSack(t *testing.T) {
+func TestRucksack(t *testing.T) {
 	result, err := daythree.SumPrioritiesInRucksack("data.txt")
 
 	if err != nil {
@@ -29,7 +29,7 @@ func TestRuckSackDataTwo(t *testing.T) {
 }
 
 func TestRucksackDayTwo(t *testing.T) {
-	result, err := daythree.SumRucksackPartTwo("data.txt")
+	result, err := daythree.SumRucksackPartTwo("data2.txt")
 
 	if err != nil {
 		t.Fatal("Error: ", err)

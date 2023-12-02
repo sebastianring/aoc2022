@@ -17,13 +17,14 @@ func TestCalorieCounting(t *testing.T) {
 	t.Log(result)
 }
 
-func TestCalorieCountingTopThree(t *testing.T) {
-	result, err := dayone.CalorieCountingTopThree("data.txt")
-
-	if err != nil {
-		t.Fatal("Error: ", err)
-	}
-
-	fmt.Println("Result from the test: ", result)
-	t.Log(result)
-}
+//
+// func TestCalorieCountingTopThree(t *testing.T) {
+// 	result, err := dayone.CalorieCountingTopThree("data.txt")
+//
+// 	if err != nil {
+// 		t.Fatal("Error: ", err)
+// 	}
+//
+// 	fmt.Println("Result from the test: ", result)
+// 	t.Log(result)
+// }

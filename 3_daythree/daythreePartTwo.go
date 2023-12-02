@@ -2,6 +2,7 @@ package daythree
 
 import (
 	"bufio"
+	"fmt"
 	"log"
 	"os"
 )
@@ -19,6 +20,7 @@ func SumRucksackPartTwo(filename string) (int, error) {
 	reader := bufio.NewReader(file)
 
 	priomap := generateAlphabetPriority()
+	fmt.Println(priomap)
 	sum := 0
 
 	rowctr := 0
@@ -44,11 +46,11 @@ func SumRucksackPartTwo(filename string) (int, error) {
 			result := priomap[triplicate]
 			sum += result
 
+			fmt.Println("Triplicate: ", triplicate, string(triplicate), "Result: ", result, "Sum: ", sum)
+
 			rowctr = 0
 			group = []string{}
 		}
-
-		// fmt.Println(result)
 	}
 
 	return sum, nil
@@ -58,14 +60,27 @@ func compareBadgesInGroup(rucksacks []string, target int) byte {
 	totalMap := make(map[byte]int)
 
 	for _, s := range rucksacks {
+		tempMap := make(map[byte]bool)
+
 		for _, v := range s {
 			charByte := byte(v)
-			_, ok := totalMap[charByte]
+
+			_, ok := tempMap[charByte]
+
+			if ok {
+				continue
+			} else {
+				tempMap[charByte] = true
+			}
+
+			_, ok = totalMap[charByte]
 
 			if !ok {
 				totalMap[charByte] = 1
 			} else {
-				if totalMap[charByte] == target-1 {
+				totalMap[charByte]++
+
+				if totalMap[charByte] == target {
 					return charByte
 				}
 			}
@@ -74,16 +89,3 @@ func compareBadgesInGroup(rucksacks []string, target int) byte {
 
 	return 0
 }
-
-//
-// mid := len(lineString) / 2
-// compartment1 := createRucksack(lineString[:mid])
-// compartment2 := createRucksack(lineString[mid:])
-//
-// // fmt.Println(lineString)
-// // fmt.Println(compartment1, compartment2)
-// // fmt.Println("---------------")
-//
-// duplicate := compareCompartments(compartment1, compartment2)
-// // fmt.Println("DUPLICATE:", string(duplicate))
-//
