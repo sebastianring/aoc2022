@@ -16,3 +16,14 @@ func TestEngineSchematic(t *testing.T) {
 	fmt.Println("Result from the test: ", result)
 	t.Log(result)
 }
+
+func TestEngineSchematic2(t *testing.T) {
+	result, err := daythree2023.EngineSchematic("data2.txt")
+
+	if err != nil {
+		t.Fatal("Error: ", err)
+	}
+
+	fmt.Println("Result from the test: ", result)
+	t.Log(result)
+}

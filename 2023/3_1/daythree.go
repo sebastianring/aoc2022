@@ -21,11 +21,6 @@ type NumberSchematic struct {
 	Length int
 }
 
-type TempNumbersSchematic struct {
-	Pos
-	Value string
-}
-
 func EngineSchematic(filename string) (int, error) {
 	file, err := os.Open(filename)
 
@@ -39,9 +34,11 @@ func EngineSchematic(filename string) (int, error) {
 	reader := bufio.NewReader(file)
 
 	sum := 0
+	y := 0
 	symbols := []Pos{}
 	numbers := []NumberSchematic{}
-	y := 0
+	lineLength := 0
+	lineHeight := 0
 
 	for {
 		lineString, err := reader.ReadString('\n')
@@ -56,75 +53,101 @@ func EngineSchematic(filename string) (int, error) {
 		}
 
 		lineString = strings.TrimSuffix(lineString, "\n")
-
-		currString := TempNumbersSchematic{
-			Value: "",
-		}
-
-		lineLength := len(lineString) - 1
+		currString := ""
+		lineLength = len(lineString) - 1
 
 		for x, c := range lineString {
 			char := string(c)
 
-			if ifSymbol(char) {
+			if ifSymbol(c) {
 				symbols = append(symbols, Pos{
 					x: x,
 					y: y,
 				})
 
-				err := AddCurrentStringAsNumber(&numbers, currString, x, y)
+				err := AddCurrentStringAsNumber(&numbers, &currString, x, y)
 
 				if err != nil {
 					return 0, err
 				}
 
-				currString.Value = ""
-
 			} else if char != "." {
-				currString.Value += char
+				currString += char
 			}
 
-			if currString.Value != "" {
+			if currString != "" {
 				if char == "." || x == lineLength {
-					err := AddCurrentStringAsNumber(&numbers, currString, x, y)
+					err := AddCurrentStringAsNumber(&numbers, &currString, x, y)
 
 					if err != nil {
 						return 0, err
 					}
-
-					currString.Value = ""
 				}
 			}
 		}
 
-		if currString.Value != "" {
-			err := AddCurrentStringAsNumber(&numbers, currString, lineLength, y)
+		if currString != "" {
+			err := AddCurrentStringAsNumber(&numbers, &currString, lineLength, y)
 
 			if err != nil {
 				return 0, nil
 			}
-
-			currString.Value = ""
 		}
 
 		y++
-		// log.Println(currString)
 	}
 
+	lineHeight = y
 	log.Printf("RESULT: Numbers: %v, Symbols: %v \n", numbers, symbols)
+
+	for _, number := range numbers {
+		ok := isSymbolNearby(number, &symbols, lineLength, lineHeight)
+
+		if ok {
+			sum += number.Value
+		}
+	}
 
 	return sum, nil
 }
 
-func AddCurrentStringAsNumber(numbers *[]NumberSchematic, currTempNumber TempNumbersSchematic, x int, y int) error {
+func isSymbolNearby(number NumberSchematic, symbols *[]Pos, lineLength int, lineHeight int) bool {
+	minx := max(number.x-1, 0)
+	maxx := min(number.x+number.Length+1, lineLength)
+
+	miny := max(number.y-1, 0)
+	maxy := min(number.y+1, lineHeight)
+
+	for _, symbol := range *symbols {
+		// log.Printf("Checking this number: %v at pos %v if symbol is nearby: %v \n", number.Value, number.Pos, symbol)
+		// log.Printf("minx: %v, maxx: %v, miny: %v, maxy: %v \n", minx, maxx, miny, maxy)
+		if symbol.x <= maxx && symbol.x >= minx &&
+			symbol.y >= miny && symbol.y <= maxy {
+			log.Printf("VAL: %v POS: %v NEARBY SYMBOL %v", number.Value, number.Pos, symbol)
+			// log.Printf("Checking this number: %v at pos %v if symbol is nearby: %v \n", number.Value, number.Pos, symbol)
+			// log.Printf("minx: %v, maxx: %v, miny: %v, maxy: %v \n", minx, maxx, miny, maxy)
+			return true
+		}
+	}
+
+	return false
+}
+
+func AddCurrentStringAsNumber(numbers *[]NumberSchematic, currTempNumber *string, x int, y int) error {
+	if *currTempNumber == "" {
+		return nil
+	}
+
 	log.Println("X, Y:", x, y)
-	value, err := strconv.Atoi(currTempNumber.Value)
+
+	value, err := strconv.Atoi(*currTempNumber)
 
 	if err != nil {
+		log.Println(err)
 		return err
 	}
 
-	numberLength := len(currTempNumber.Value)
+	numberLength := len(*currTempNumber)
 
 	number := NumberSchematic{
 		Pos: Pos{
@@ -136,18 +159,32 @@ func AddCurrentStringAsNumber(numbers *[]NumberSchematic, currTempNumber TempNum
 	}
 
 	*numbers = append(*numbers, number)
+	*currTempNumber = ""
 
 	return nil
 }
 
-func ifSymbol(c string) bool {
-	if c == "." {
-		return false
-	}
-
-	if unicode.IsNumber(rune(c[0])) {
+func ifSymbol(c rune) bool {
+	if c == rune('.') ||
+		unicode.IsNumber(c) {
 		return false
 	}
 
 	return true
+}
+
+func max(a int, b int) int {
+	if a > b {
+		return a
+	}
+
+	return b
+}
+
+func min(a int, b int) int {
+	if a < b {
+		return a
+	}
+
+	return b
 }
