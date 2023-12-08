@@ -21,6 +21,11 @@ type NumberSchematic struct {
 	Length int
 }
 
+type Gear struct {
+	Pos
+	Values []int
+}
+
 func EngineSchematic(filename string) (int, error) {
 	file, err := os.Open(filename)
 
@@ -111,9 +116,109 @@ func EngineSchematic(filename string) (int, error) {
 	return sum, nil
 }
 
+func EngineSchematicPartTwo(filename string) (int, error) {
+	file, err := os.Open(filename)
+
+	if err != nil {
+		// log.Println("Error opening file: ", err)
+		return 0, err
+	}
+
+	defer file.Close()
+
+	reader := bufio.NewReader(file)
+
+	sum := 0
+	y := 0
+	gears := []Gear{}
+	numbers := []NumberSchematic{}
+	lineLength := 0
+	lineHeight := 0
+
+	for {
+		lineString, err := reader.ReadString('\n')
+
+		if err != nil {
+			if err.Error() == "EOF" {
+				break
+			}
+
+			// log.Println("Error reading line: ", err)
+			return 0, err
+		}
+
+		lineString = strings.TrimSuffix(lineString, "\n")
+		currString := ""
+		lineLength = len(lineString) - 1
+
+		for x, c := range lineString {
+			char := string(c)
+
+			if ifSymbol(c) {
+				if ifStar(c) {
+					gears = append(gears, Gear{
+						Pos: Pos{
+							x: x,
+							y: y,
+						}})
+
+					err := AddCurrentStringAsNumber(&numbers, &currString, x, y)
+
+					if err != nil {
+						return 0, err
+					}
+
+				}
+			} else if char != "." {
+				currString += char
+			}
+
+			if currString != "" {
+				if char == "." || x == lineLength {
+					err := AddCurrentStringAsNumber(&numbers, &currString, x, y)
+
+					if err != nil {
+						return 0, err
+					}
+				}
+			}
+		}
+
+		if currString != "" {
+			err := AddCurrentStringAsNumber(&numbers, &currString, lineLength, y)
+
+			if err != nil {
+				return 0, nil
+			}
+		}
+
+		y++
+	}
+
+	lineHeight = y
+
+	for _, number := range numbers {
+		_ = isSymbolNearbyPartTwo(number, &gears, lineLength, lineHeight)
+
+		// if ok {
+		// 	sum += number.Value
+		// }
+	}
+
+	for _, gear := range gears {
+		if len(gear.Values) == 2 {
+			sum += gear.Values[0] * gear.Values[1]
+		}
+	}
+
+	log.Printf("RESULT: Numbers: %v, Gears: %v \n", numbers, gears)
+
+	return sum, nil
+}
+
 func isSymbolNearby(number NumberSchematic, symbols *[]Pos, lineLength int, lineHeight int) bool {
 	minx := max(number.x-1, 0)
-	maxx := min(number.x+number.Length+1, lineLength)
+	maxx := min(number.x+number.Length, lineLength)
 
 	miny := max(number.y-1, 0)
 	maxy := min(number.y+1, lineHeight)
@@ -123,9 +228,34 @@ func isSymbolNearby(number NumberSchematic, symbols *[]Pos, lineLength int, line
 		// log.Printf("minx: %v, maxx: %v, miny: %v, maxy: %v \n", minx, maxx, miny, maxy)
 		if symbol.x <= maxx && symbol.x >= minx &&
 			symbol.y >= miny && symbol.y <= maxy {
-			log.Printf("VAL: %v POS: %v NEARBY SYMBOL %v", number.Value, number.Pos, symbol)
+			// log.Printf("VAL: %v POS: %v NEARBY SYMBOL %v", number.Value, number.Pos, symbol)
 			// log.Printf("Checking this number: %v at pos %v if symbol is nearby: %v \n", number.Value, number.Pos, symbol)
 			// log.Printf("minx: %v, maxx: %v, miny: %v, maxy: %v \n", minx, maxx, miny, maxy)
+			return true
+		}
+	}
+
+	return false
+}
+
+func isSymbolNearbyPartTwo(number NumberSchematic, gears *[]Gear, lineLength int, lineHeight int) bool {
+	minx := max(number.x-1, 0)
+	maxx := min(number.x+number.Length, lineLength)
+
+	miny := max(number.y-1, 0)
+	maxy := min(number.y+1, lineHeight)
+
+	for i := range *gears {
+		// log.Printf("Checking this number: %v at pos %v if symbol is nearby: %v \n", number.Value, number.Pos, symbol)
+		// log.Printf("minx: %v, maxx: %v, miny: %v, maxy: %v \n", minx, maxx, miny, maxy)
+		if (*gears)[i].x <= maxx && (*gears)[i].x >= minx &&
+			(*gears)[i].y >= miny && (*gears)[i].y <= maxy {
+			// log.Printf("VAL: %v POS: %v NEARBY SYMBOL %v", number.Value, number.Pos, symbol)
+			// log.Printf("Checking this number: %v at pos %v if symbol is nearby: %v \n", number.Value, number.Pos, symbol)
+			// log.Printf("minx: %v, maxx: %v, miny: %v, maxy: %v \n", minx, maxx, miny, maxy)
+			(*gears)[i].Values = append((*gears)[i].Values, number.Value)
+			log.Printf("Appending values: %v, to list: %v", number.Value, (*gears)[i].Values)
+
 			return true
 		}
 	}
@@ -171,6 +301,14 @@ func ifSymbol(c rune) bool {
 	}
 
 	return true
+}
+
+func ifStar(c rune) bool {
+	if c == rune('*') {
+		return true
+	}
+
+	return false
 }
 
 func max(a int, b int) int {

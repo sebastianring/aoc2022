@@ -7,7 +7,7 @@ import (
 )
 
 func TestEngineSchematic(t *testing.T) {
-	result, err := daythree2023.EngineSchematic("data.txt")
+	result, err := daythree2023.EngineSchematic("data2.txt")
 
 	if err != nil {
 		t.Fatal("Error: ", err)
@@ -18,7 +18,18 @@ func TestEngineSchematic(t *testing.T) {
 }
 
 func TestEngineSchematic2(t *testing.T) {
-	result, err := daythree2023.EngineSchematic("data2.txt")
+	result, err := daythree2023.EngineSchematic("data3.txt")
+
+	if err != nil {
+		t.Fatal("Error: ", err)
+	}
+
+	fmt.Println("Result from the test: ", result)
+	t.Log(result)
+}
+
+func TestEngineSchematicPartTwo(t *testing.T) {
+	result, err := daythree2023.EngineSchematicPartTwo("data2.txt")
 
 	if err != nil {
 		t.Fatal("Error: ", err)
