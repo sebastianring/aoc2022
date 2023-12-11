@@ -114,6 +114,7 @@ func ComparePlayerToWinning(playerNumbers []string, winningNumbers []string) []i
 }
 
 type CardValue struct {
+	Number        int
 	Value         int
 	Instances     int
 	TrailingCards int
@@ -130,7 +131,8 @@ func ScratchCardsPartTwo(filename string) (int, error) {
 	defer file.Close()
 
 	reader := bufio.NewReader(file)
-	allCards := make(map[int]CardValue, 0)
+	// allCards := make(map[int]CardValue, 0)
+	allCards := []CardValue{}
 	sum := 0
 
 	// points := make(map[int]int, 0)
@@ -186,38 +188,53 @@ func ScratchCardsPartTwo(filename string) (int, error) {
 			if cardSum == 0 {
 				cardSum = 1
 			} else {
-				cardSum = cardSum * 2
+				cardSum *= 2
 			}
 		}
 
-		if val, ok := allCards[card]; ok {
-			val.Instances += 1
-			allCards[card] = val
-		} else {
-			newCardValue := CardValue{
-				// Value:         cardSum,
-				Instances:     1,
-				TrailingCards: len(outcome),
-			}
-
-			allCards[card] = newCardValue
+		currentCard := CardValue{
+			Number:        card,
+			Value:         cardSum,
+			Instances:     1,
+			TrailingCards: len(outcome),
 		}
+
+		allCards = append(allCards, currentCard)
+
+		// if val, ok := allCards[card]; ok {
+		// 	val.Instances += 1
+		// 	allCards[card] = val
+		// } else {
+		// 	newCardValue := CardValue{
+		// 		// Value:         cardSum,
+		// 		Instances:     1,
+		// 		TrailingCards: len(outcome),
+		// 	}
+		//
+		// 	allCards[card] = newCardValue
+		// }
 
 		// sum += cardSum
 
-		fmt.Printf("Total value for card: %v %v \n", sum, allCards[card])
+		fmt.Printf("Total value for card: %v %v \n", sum, allCards[card-1])
 		fmt.Println("----------------")
 	}
 
 	for k, v := range allCards {
+		fmt.Printf("This card: %v with trailing values: %v and instances: %v ------- Trailing: ", k, v.TrailingCards, v.Instances)
 		// fmt.Printf("Card #%v Value: %v Multiplier: %v Trailing: %v \n", k, card.Value, card.Multiplier, card.TrailingCards)
 		for i := 0; i < v.TrailingCards; i++ {
 			nextCard := k + i + 1
-			if val, ok := allCards[nextCard]; ok {
-				val.Instances += v.Instances
-				allCards[nextCard] = val
+
+			if nextCard >= len(allCards) {
+				continue
 			}
+
+			fmt.Printf("%v, ", nextCard)
+			allCards[nextCard].Instances += v.Instances
 		}
+
+		fmt.Printf("\n")
 	}
 
 	for _, v := range allCards {
@@ -227,7 +244,7 @@ func ScratchCardsPartTwo(filename string) (int, error) {
 	fmt.Println("TOTAL RESULT:", len(allCards))
 
 	for i := 0; i < len(allCards); i++ {
-		fmt.Printf("Card #%v Value: %v Multiplier: %v Trailing: %v \n", i, allCards[i].Value, allCards[i].Instances, allCards[i].TrailingCards)
+		fmt.Printf("Card #%v Value: %v Instances: %v Trailing: %v \n", i, allCards[i].Value, allCards[i].Instances, allCards[i].TrailingCards)
 	}
 
 	return sum, nil

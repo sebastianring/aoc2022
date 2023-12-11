@@ -18,7 +18,7 @@ func TestScratchCards(t *testing.T) {
 	t.Log(result)
 }
 
-func TestScratchCardsPartTwo(t *testing.T) {
+func TestScratchCardsPartTwoDataOne(t *testing.T) {
 	result, err := dayfour2023.ScratchCardsPartTwo("data.txt")
 
 	if err != nil {
