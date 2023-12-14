@@ -9,16 +9,14 @@ import (
 )
 
 type RangeValues struct {
-	Dest      int
-	Source    int
-	Length    int
-	SourceMin int
-	SourceMax int
+	Dest   int
+	Source int
+	Length int
 }
 
 type SeedRange struct {
-	Min int
-	Max int
+	Base   int
+	Length int
 }
 
 func SeedToLocation(filename string) (int, error) {
@@ -201,6 +199,7 @@ func SeedToLocationPartTwo(filename string) (int, error) {
 			if ok {
 				fmt.Println("Found this convertMap: ", convertMap[currentString])
 				seedRangeLength := len(seedRanges)
+				tempSeedRanges := []SeedRange{}
 
 				for i := 0; i < seedRangeLength; i++ {
 					dests, err := GetDestRangesFromSourceRange(seedRanges[i], convertMap[currentString])
@@ -209,9 +208,12 @@ func SeedToLocationPartTwo(filename string) (int, error) {
 						return 0, err
 					}
 
-					seedRanges = append(seedRanges, dests...)
+					tempSeedRanges = append(tempSeedRanges, dests...)
 					// fmt.Printf("I: %v, Map: %v, Source: %v, Destination: %v Length Seedranges: %v \n", i, currentString, seedRanges[i], dests, len(seedRanges))
 				}
+
+				seedRanges = tempSeedRanges
+				fmt.Printf("New SeedRanges: %v \n", seedRanges)
 			}
 
 			currentString = ""
@@ -255,15 +257,12 @@ func SeedToLocationPartTwo(filename string) (int, error) {
 			}
 
 			rv := RangeValues{
-				Source:    source,
-				Dest:      dest,
-				Length:    length,
-				SourceMin: source,
-				SourceMax: source + length,
+				Source: source,
+				Dest:   dest,
+				Length: length,
 			}
 
 			convertMap[currentString] = append(convertMap[currentString], rv)
-
 		}
 	}
 
@@ -271,12 +270,13 @@ func SeedToLocationPartTwo(filename string) (int, error) {
 	for k, v := range convertMap {
 		fmt.Printf("Key: %v, Value: %v \n", k, v)
 	}
-	//
-	// for _, seed := range seedRanges {
-	// 	if seed < sum {
-	// 		sum = seed
-	// 	}
-	// }
+
+	for _, seed := range seedRanges {
+		// fmt.Printf("Seed min: %v max: %v \n", seed.Min, seed.Max)
+		if seed.Base < sum {
+			sum = seed.Base
+		}
+	}
 
 	return sum, nil
 }
@@ -311,20 +311,19 @@ func GetDestRangesFromSourceRange(sourceRange SeedRange, rvs []RangeValues) ([]S
 		dests = append(dests, overlap)
 	}
 
-	// fmt.Println("DESTS: ", dests)
+	fmt.Println("DESTS: ", dests)
 
 	return dests, nil
 }
 
 func GetOverlapRanges(input SeedRange, comparable RangeValues) (SeedRange, error) {
 	result := SeedRange{}
-	// fmt.Printf("Input: %v Comparable: %v\n", input, comparable)
+	fmt.Printf("Input: %v Comparable: %v\n", input, comparable)
 
-	result.Min = max(input.Min, comparable.SourceMin)
-	result.Max = min(input.Max, comparable.SourceMax)
+	result.Base = max(input.Min, comparable.SourceMin)
+	result.Length = min(input.Max, comparable.SourceMax)
 
-	// fmt.Println("Found an overlap: ", result.Min, result.Max)
-
+	fmt.Println("Found an overlap: ", result.Min, result.Max)
 	return result, nil
 }
 
