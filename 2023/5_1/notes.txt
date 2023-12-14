@@ -1,5 +1,13 @@
 seeds: 79 14 55 13
 
+// seedRange #1:
+// min: 79 max: 93
+// rv #1:
+// dest: 50
+// source: 98
+// length: 2
+
+
 seed-to-soil map:
 50 98 2
 52 50 48
