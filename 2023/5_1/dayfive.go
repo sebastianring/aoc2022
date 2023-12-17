@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -17,6 +18,11 @@ type RangeValues struct {
 type SeedRange struct {
 	Base   int
 	Length int
+}
+
+type OverlapResponse struct {
+	Overlap   bool
+	SeedRange SeedRange
 }
 
 func SeedToLocation(filename string) (int, error) {
@@ -299,32 +305,67 @@ func GetDestFromSource(source int, rvs []RangeValues) (int, error) {
 }
 
 func GetDestRangesFromSourceRange(sourceRange SeedRange, rvs []RangeValues) ([]SeedRange, error) {
-	var dests []SeedRange
+	fmt.Println("Source range:", sourceRange)
+	resultRanges := []SeedRange{}
+	currentRange := sourceRange
 
-	for _, rv := range rvs {
-		overlap, err := GetOverlapRanges(sourceRange, rv)
+	sort.Slice(rvs, func(i, j int) bool {
+		return rvs[i].Source < rvs[j].Source
+	})
 
-		if err != nil {
-			return dests, err
+	fmt.Println("SORTED RVS:", rvs)
+
+	i := 0
+	rvsCtr := 0
+
+	for i <= sourceRange.Length {
+		for rvsCtr < len(rvs)-1 && currentRange.Base > rvs[rvsCtr].Source {
+			rvsCtr++
 		}
 
-		dests = append(dests, overlap)
+		increment := 0
+
+		if rvs[rvsCtr].Source >= currentRange.Base &&
+			rvs[rvsCtr].Source < currentRange.Base+currentRange.Length {
+
+			adjustCurrentRangeLength := 0
+
+			// if a prerange is needed
+			if rvs[rvsCtr].Source > currentRange.Base {
+				preRange := SeedRange{
+					Base:   currentRange.Base,
+					Length: rvs[rvsCtr].Source - currentRange.Base,
+				}
+
+				resultRanges = append(resultRanges, preRange)
+				adjustCurrentRangeLength += preRange.Length
+			}
+
+			baseOffset := rvs[rvsCtr].Source - currentRange.Base
+			minLength := min(rvs[rvsCtr].Length, currentRange.Length)
+
+			rvRange := SeedRange{
+				Base:   rvs[rvsCtr].Dest + baseOffset,
+				Length: minLength,
+			}
+
+			adjustCurrentRangeLength += rvRange.Length
+
+			resultRanges = append(resultRanges, rvRange)
+			increment += adjustCurrentRangeLength
+
+			fmt.Println("RANGES CALCULATED: ", resultRanges)
+		} else if rvsCtr >= len(rvs)-1 {
+			resultRanges = append(resultRanges, currentRange)
+			increment += currentRange.Length
+		}
+
+		fmt.Printf("I: %v, SourceRange Length: %v \n", i, sourceRange.Length)
+		fmt.Println("RANGES CALCULATED: ", resultRanges)
+		i += increment
 	}
 
-	fmt.Println("DESTS: ", dests)
-
-	return dests, nil
-}
-
-func GetOverlapRanges(input SeedRange, comparable RangeValues) (SeedRange, error) {
-	result := SeedRange{}
-	fmt.Printf("Input: %v Comparable: %v\n", input, comparable)
-
-	result.Base = max(input.Min, comparable.SourceMin)
-	result.Length = min(input.Max, comparable.SourceMax)
-
-	fmt.Println("Found an overlap: ", result.Min, result.Max)
-	return result, nil
+	return resultRanges, nil
 }
 
 func GetAllSeeds(input []string) ([]int, error) {
@@ -372,8 +413,8 @@ func GetAllSeedRanges(input []string) ([]SeedRange, error) {
 		}
 
 		sr := SeedRange{
-			Min: mini,
-			Max: mini + length,
+			Base:   mini,
+			Length: length,
 		}
 
 		result = append(result, sr)

@@ -1,11 +1,48 @@
 seeds: 79 14 55 13
 
 // seedRange #1:
-// min: 79 max: 93
+// min: 79 length: 14
 // rv #1:
 // dest: 50
 // source: 98
 // length: 2
+
+// rv #2:
+// dest: 52 
+// source: 50 
+// length: 48
+// NEW SEED RANGE:
+// DIFF: min-source (79-50) = 29
+// BASE: dest (52) + diff (29)
+// LENGTH: MIN(length, (dest+length-BASE))
+//         MIN(14    ,  52 + 48    -79) = 14
+
+
+// seedRange #1:
+// min: 79 length: 14
+
+// rv #0:
+// dest: 50
+// source: 98
+// length: 2
+
+// rv #1
+// dest: 10
+// source: 84
+// length: 4
+
+// rv #2
+// dest: 20
+// source: 90
+// length: 2
+
+// [79, 14]    END: 92 (79+14-1)
+// [79, 5]                [84, 4 -> 10, 4] [88,  2] [90,  2] [92, 1]
+                          [84, 85, 86, 87] [88, 89] [90, 91] [92  ]
+// [79, 80, 81, 82, 83]   [10, 11, 12, 13] [88, 89] [20, 21]
+
+
+
 
 
 seed-to-soil map:
