@@ -17,3 +17,14 @@ func TestButtonToWinDataOne(t *testing.T) {
 	fmt.Println("Result from the test: ", result)
 	t.Log(result)
 }
+
+func TestButtonToWinDataTwo(t *testing.T) {
+	result, err := daysix2023.ButtonToWin("data2.txt")
+
+	if err != nil {
+		t.Fatal("Error: ", err)
+	}
+
+	fmt.Println("Result from the test: ", result)
+	t.Log(result)
+}

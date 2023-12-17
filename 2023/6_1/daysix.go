@@ -92,7 +92,47 @@ func ButtonToWin(filename string) (int, error) {
 
 	fmt.Println(races)
 
+	winnables := []int{}
+
+	for _, race := range races {
+		waysToWinRace := 0
+		for i := 0; i < race.Time; i++ {
+			distanceTraveled := DistanceTraveled(race, i)
+
+			if distanceTraveled > race.Distance {
+				waysToWinRace++
+			}
+		}
+
+		if waysToWinRace > 0 {
+			winnables = append(winnables, waysToWinRace)
+		}
+	}
+
+	sum = Multiple(winnables)
+
 	return sum, nil
+}
+
+func Multiple(input []int) int {
+	var sum int
+
+	for i, val := range input {
+		if i == 0 {
+			sum = val
+			continue
+		}
+
+		sum *= val
+	}
+
+	return sum
+}
+
+func DistanceTraveled(race Race, secondsHeld int) int {
+	timeLeft := race.Time - secondsHeld
+
+	return timeLeft * secondsHeld
 }
 
 func max(a int, b int) int {
