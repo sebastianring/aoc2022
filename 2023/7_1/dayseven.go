@@ -11,11 +11,12 @@ import (
 )
 
 type Hand struct {
-	Cards      []int
-	Bid        int
-	Score      []int
-	TotalScore int
-	Rank       int
+	Cards           []int
+	ReplacementCard int
+	Bid             int
+	Score           []int
+	TotalScore      int
+	Rank            int
 }
 
 func CamelCards(filename string) (int, error) {
@@ -85,7 +86,7 @@ func CamelCards(filename string) (int, error) {
 	})
 
 	for i, hand := range hands {
-		fmt.Printf("Cards: %v, Score: %v \n", hand.Cards, hand.TotalScore)
+		fmt.Printf("Cards: %v, Score: %v Sum: %v Bid: %v Rank: %v \n", hand.Cards, hand.TotalScore, hand.Bid*(i+1), hand.Bid, i+1)
 		sum += hand.Bid * (i + 1)
 	}
 
@@ -94,6 +95,9 @@ func CamelCards(filename string) (int, error) {
 
 func (h *Hand) SetScore() {
 	scoreMap := map[int]int{}
+	highestCount := 0
+	highestCard := 0
+	fmt.Printf("Started calculated this hand: %v\n", h.Cards)
 
 	for _, card := range h.Cards {
 		_, ok := scoreMap[card]
@@ -103,15 +107,52 @@ func (h *Hand) SetScore() {
 		} else {
 			scoreMap[card]++
 		}
+
+		if scoreMap[card] > highestCount || highestCount == 1 && card > highestCard {
+			if card != 1 {
+				highestCount = scoreMap[card]
+				highestCard = card
+				fmt.Printf("Highest card updated: %v, number of cards: %v\n", highestCard, highestCount)
+			}
+		}
 	}
+
+	fmt.Printf("Scoremap: %v\n", scoreMap)
+
+	replacementCard := 0
+	// _ = replacementCard
+
+	// if highestCount > 1 {
+	replacementCard = highestCard
+	// } else {
+	// replacementCard = 14
+	// }
+
+	for i := 0; i < len(h.Cards); i++ {
+		if h.Cards[i] == 1 {
+			fmt.Printf("Replaced card: %v ", h.Cards[i])
+			// h.Cards[i] = replacementCard
+			fmt.Printf(" with card: %v \n", replacementCard)
+
+			scoreMap[1]--
+			scoreMap[replacementCard]++
+
+			if scoreMap[1] == 0 {
+				delete(scoreMap, 1)
+			}
+		}
+	}
+
+	fmt.Printf("Scoremap: %v\n", scoreMap)
+	fmt.Printf("Updated hand looks like this: %v \n", h.Cards)
 
 	sum := []int{}
 	totalSum := 0
 
-	for _, card := range scoreMap {
+	for i, card := range scoreMap {
 		sum = append(sum, card)
 
-		if totalSum == 0 {
+		if i == 0 {
 			totalSum = card * card
 		} else {
 			totalSum += card * card
@@ -124,6 +165,7 @@ func (h *Hand) SetScore() {
 	h.TotalScore = totalSum
 
 	fmt.Printf("Sum: %v, Totalscore: %v\n", h.Score, h.TotalScore)
+	fmt.Printf("-------------- \n")
 }
 
 func NewHandFromStrings(cards string, bid string) (Hand, error) {
@@ -131,6 +173,7 @@ func NewHandFromStrings(cards string, bid string) (Hand, error) {
 	resultHand := Hand{}
 
 	cardValue := map[string]int{
+		"J": 1,
 		"2": 2,
 		"3": 3,
 		"4": 4,
@@ -140,7 +183,6 @@ func NewHandFromStrings(cards string, bid string) (Hand, error) {
 		"8": 8,
 		"9": 9,
 		"T": 10,
-		"J": 11,
 		"Q": 12,
 		"K": 13,
 		"A": 14,
