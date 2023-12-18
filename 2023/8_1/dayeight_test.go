@@ -17,3 +17,25 @@ func TestHauntedWastelandDataOne(t *testing.T) {
 	fmt.Println("Result from the test: ", result)
 	t.Log(result)
 }
+
+func TestHauntedWastelandDataTwo(t *testing.T) {
+	result, err := dayeight2023.HauntedWasteland("data2.txt")
+
+	if err != nil {
+		t.Fatal("Error: ", err)
+	}
+
+	fmt.Println("Result from the test: ", result)
+	t.Log(result)
+}
+
+func TestHauntedWastelandDataThree(t *testing.T) {
+	result, err := dayeight2023.HauntedWasteland("data3.txt")
+
+	if err != nil {
+		t.Fatal("Error: ", err)
+	}
+
+	fmt.Println("Result from the test: ", result)
+	t.Log(result)
+}

@@ -32,7 +32,9 @@ func HauntedWasteland(filename string) (int, error) {
 	reader := bufio.NewReader(file)
 	sum := 0
 	row := 0
-	// instructions := ""
+	instructions := ""
+	ndrMap := map[string]*NewDirectionResponse{}
+	var next *Direction
 
 	for {
 		lineString, err := reader.ReadString('\n')
@@ -46,7 +48,6 @@ func HauntedWasteland(filename string) (int, error) {
 		}
 
 		lineString = strings.TrimSuffix(lineString, "\n")
-		memoMap := map[string]NewDirectionResponse
 
 		if row > 1 {
 			ndr := NewDirectionFromInput(lineString)
@@ -55,31 +56,67 @@ func HauntedWasteland(filename string) (int, error) {
 				return 0, err
 			}
 
-			memoMap[ndr.Direction.Name]
+			ndrMap[ndr.Direction.Name] = ndr
+			fmt.Printf("Added ndr with name: %v with left: %v and right: %v \n",
+				ndr.Direction.Name, ndr.Left, ndr.Right)
 
 		} else if row == 0 {
-			// instructions = lineString
+			instructions = lineString
 			row++
+
+			fmt.Printf("Instructions: %v\n", instructions)
 		} else {
 			row++
 			continue
 		}
 	}
 
+	dirMap := map[string]*Direction{}
+
+	for k, ndr := range ndrMap {
+		dirMap[k] = ndr.Direction
+		dirMap[k].Left = ndrMap[ndr.Left].Direction
+		dirMap[k].Right = ndrMap[ndr.Right].Direction
+	}
+
+	next = dirMap["AAA"]
+
+	for k, v := range dirMap {
+		fmt.Printf("Name: %v, Left: %v Right: %v \n", k, v.Left.Name, v.Right.Name)
+	}
+
+	for next.Name != "ZZZ" {
+		// fmt.Printf("Next name: %v\n", next.Name)
+		i := 0
+		for i < len(instructions) {
+			char := string(instructions[i])
+			// fmt.Printf("Checking instruction: %v \n", char)
+			if char == "R" {
+				next = next.Right
+			} else if char == "L" {
+				next = next.Left
+			} else {
+				fmt.Printf("INSTRUCTIONS UNCLEAR PLEASE FIX: %v \n", instructions[i])
+			}
+
+			sum++
+			i++
+		}
+	}
+
 	return sum, nil
 }
 
-func NewDirectionFromInput(input []string) NewDirectionResponse {
-
-	segments := strings.Split(input[], " ")
+func NewDirectionFromInput(input string) *NewDirectionResponse {
+	segments := strings.Split(input, " ")
 	name := segments[0]
 
 	left := segments[2]
-	strings.TrimLeft(left, "(")
-	strings.TrimRight(left, ",")
+	left = strings.TrimLeft(left, "(")
+	left = strings.TrimRight(left, ",")
 
 	right := segments[3]
-	strings.TrimRight(right, ")")
+	right = strings.TrimRight(right, ")")
 
 	d := NewDirection(name)
 
@@ -90,7 +127,7 @@ func NewDirectionFromInput(input []string) NewDirectionResponse {
 		Err:       nil,
 	}
 
-	return ndr
+	return &ndr
 }
 
 func NewDirection(name string) *Direction {
