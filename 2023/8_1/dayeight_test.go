@@ -50,3 +50,14 @@ func TestHauntedWastelandPartTwoDataOne(t *testing.T) {
 	fmt.Println("Result from the test: ", result)
 	t.Log(result)
 }
+
+func TestHauntedWastelandPartTwoDataTwo(t *testing.T) {
+	result, err := dayeight2023.HauntedWastelandPartTwo("data3.txt")
+
+	if err != nil {
+		t.Fatal("Error: ", err)
+	}
+
+	fmt.Println("Result from the test: ", result)
+	t.Log(result)
+}

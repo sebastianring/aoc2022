@@ -8,6 +8,14 @@ import (
 	"sync"
 )
 
+type DirectionHead struct {
+	Current     *Direction
+	OriginalDir *Direction
+	Ctr         int
+	Done        bool
+	Multiplier  int
+}
+
 type Direction struct {
 	Name  string
 	Left  *Direction
@@ -154,8 +162,8 @@ func HauntedWastelandPartTwo(filename string) (int, error) {
 			}
 
 			ndrMap[ndr.Direction.Name] = ndr
-			fmt.Printf("Added ndr with name: %v with left: %v and right: %v \n",
-				ndr.Direction.Name, ndr.Left, ndr.Right)
+			// fmt.Printf("Added ndr with name: %v with left: %v and right: %v \n",
+			// ndr.Direction.Name, ndr.Left, ndr.Right)
 
 		} else if row == 0 {
 			instructions = lineString
@@ -169,7 +177,8 @@ func HauntedWastelandPartTwo(filename string) (int, error) {
 	}
 
 	dirMap := map[string]*Direction{}
-	nexts := []*Direction{}
+	// nexts := []*Direction{}
+	headers := []*DirectionHead{}
 
 	for k, ndr := range ndrMap {
 		dirMap[k] = ndr.Direction
@@ -177,54 +186,103 @@ func HauntedWastelandPartTwo(filename string) (int, error) {
 		dirMap[k].Right = ndrMap[ndr.Right].Direction
 
 		if string(ndr.Direction.Name[2]) == "A" {
-			nexts = append(nexts, ndr.Direction)
-			fmt.Printf("Added start next value: %v \n", ndr.Direction.Name)
+			// nexts = append(nexts, ndr.Direction)
+
+			head := DirectionHead{
+				Current:     ndr.Direction,
+				OriginalDir: ndr.Direction,
+				Ctr:         0,
+			}
+
+			headers = append(headers, &head)
 		}
 	}
 
 	sum := 0
 
-	for k, v := range dirMap {
-		fmt.Printf("Name: %v, Left: %v Right: %v \n", k, v.Left.Name, v.Right.Name)
+	fmt.Printf("Start values: \n")
+	for i, head := range headers {
+		fmt.Printf("Ctr: %v, Value: %v Right: %v Left: %v \n", i, head.Current.Name, head.Current.Right.Name, head.Current.Left.Name)
 	}
 
-	var wg sync.WaitGroup
-	safeCounter := SafeCounter{
-		counter: 0,
-	}
+	for !AllDone(headers) {
+		i := 0
 
-	for _, next := range nexts {
-		wg.Add(1)
-		go func(next *Direction) {
-			for string(next.Name[2]) != "Z" {
-				fmt.Printf("Next name: %v last char: %v sum: %v \n", next.Name, string(next.Name[2]), sum)
-				i := 0
+		for i < len(instructions) {
+			char := string(instructions[i])
 
-				for i < len(instructions) {
-					char := string(instructions[i])
-					fmt.Printf("Checking instruction: %v \n", char)
-
-					if char == "R" {
-						next = next.Right
-					} else if char == "L" {
-						next = next.Left
-					} else {
-						fmt.Printf("INSTRUCTIONS UNCLEAR PLEASE FIX: %v \n", instructions[i])
+			switch char {
+			case "R":
+				for j := 0; j < len(headers); j++ {
+					if !headers[j].Done {
+						if string(headers[j].Current.Name[2]) == "Z" {
+							headers[j].Done = true
+						} else {
+							headers[j].Current = headers[j].Current.Right
+							headers[j].Ctr++
+						}
 					}
-
-					safeCounter.Increment()
-					i++
 				}
+
+			case "L":
+				for j := 0; j < len(headers); j++ {
+					if !headers[j].Done {
+						if string(headers[j].Current.Name[2]) == "Z" {
+							headers[j].Done = true
+						} else {
+							headers[j].Current = headers[j].Current.Left
+							headers[j].Ctr++
+						}
+					}
+				}
+
+			default:
+				fmt.Printf("INSTRUCTIONS UNCLEAR PLEASE FIX: %v \n", instructions[i])
 			}
 
-			wg.Done()
-		}(next)
+			i++
+		}
 	}
 
-	wg.Wait()
-	sum = safeCounter.counter
+	for i, head := range headers {
+		fmt.Printf("Head #%v - Original %v - Ctr: %v - Multiplier: %v - Total: %v \n",
+			i, head.OriginalDir.Name, head.Ctr, head.Multiplier, head.Ctr*head.Multiplier)
+	}
+
+	LadderItUp(headers)
+
+	fmt.Println("-------")
+	for i, head := range headers {
+		fmt.Printf("Head #%v - Original %v - Ctr: %v - Multiplier: %v - Total: %v \n",
+			i, head.OriginalDir.Name, head.Ctr, head.Multiplier, head.Ctr*head.Multiplier)
+	}
+
+	sum = headers[0].Ctr * headers[0].Multiplier
 
 	return sum, nil
+}
+
+func AllDone(input []*DirectionHead) bool {
+	for _, head := range input {
+		if !head.Done {
+			return false
+		}
+	}
+
+	return true
+}
+
+func IfAllEndsInZ(nexts []*Direction) bool {
+	for i, next := range nexts {
+		if string(next.Name[2]) != "Z" {
+			if i > 3 {
+				fmt.Printf("This many did end in Z: %v This one did not end in Z: %v \n", i, next.Name)
+			}
+			return false
+		}
+	}
+
+	return true
 }
 
 func NewDirectionFromInput(input string) *NewDirectionResponse {
@@ -256,4 +314,61 @@ func NewDirection(name string) *Direction {
 	}
 
 	return &d
+}
+
+func LadderItUp(headers []*DirectionHead) {
+	// HIGHEST
+	// Ctr: 22301
+	// Mlt: 1
+	//
+	// First head
+	// Value: 16631
+	// Mlt: 1
+
+	highest := &DirectionHead{}
+
+	for _, head := range headers {
+		if head.Ctr > highest.Ctr {
+			highest = head
+		}
+	}
+
+	done := false
+
+	for !done {
+		done = true
+		highestValue := highest.Ctr + (highest.Ctr * highest.Multiplier)
+		for i := 0; i < len(headers); i++ {
+			if highest == headers[i] {
+				continue
+			}
+
+			headers[i].Multiplier = highestValue / headers[i].Ctr
+			remainder := highestValue % headers[i].Ctr
+
+			// fmt.Printf("highest ctr: %v, mult: %v, total: %v \n", highest.Ctr, highest.Multiplier, highestValue)
+
+			// fmt.Printf("For value: %v, the multiplier is: %v and the remainder is: %v \n",
+			// 	headers[i].Current.Name, headers[i].Multiplier, remainder)
+
+			if remainder > 0 {
+				done = false
+			}
+		}
+
+		highest.Multiplier++
+	}
+}
+
+func DeleteMultipleIndexInSlice(slice []*Direction, indexes []int) []*Direction {
+	for _, index := range indexes {
+		slice = DeleteIndexInSlice(slice, index)
+	}
+
+	return slice
+}
+
+func DeleteIndexInSlice(slice []*Direction, index int) []*Direction {
+	slice[index] = slice[len(slice)-1]
+	return slice[:len(slice)-1]
 }
