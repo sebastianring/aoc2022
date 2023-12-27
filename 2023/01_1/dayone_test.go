@@ -2,7 +2,7 @@ package dayone2023_test
 
 import (
 	"fmt"
-	dayone2023 "github.com/sebastianring/aoc2022/2023/1_1"
+	dayone2023 "github.com/sebastianring/aoc2022/2023/01_1"
 	"testing"
 )
 

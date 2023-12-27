@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	dayfive2023 "github.com/sebastianring/aoc2022/2023/5_1"
+	dayfive2023 "github.com/sebastianring/aoc2022/2023/05_1"
 )
 
 func TestSeedToLocationDataOne(t *testing.T) {

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	dayeight2023 "github.com/sebastianring/aoc2022/2023/8_1"
+	dayeight2023 "github.com/sebastianring/aoc2022/2023/08_1"
 )
 
 func TestHauntedWastelandDataOne(t *testing.T) {

@@ -2,7 +2,7 @@ package daythree2023_test
 
 import (
 	"fmt"
-	daythree2023 "github.com/sebastianring/aoc2022/2023/3_1"
+	daythree2023 "github.com/sebastianring/aoc2022/2023/03_1"
 	"testing"
 )
 

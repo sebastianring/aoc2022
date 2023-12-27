@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	dayseven2023 "github.com/sebastianring/aoc2022/2023/7_1"
+	dayseven2023 "github.com/sebastianring/aoc2022/2023/07_1"
 )
 
 func TestCamelCardsDataOne(t *testing.T) {

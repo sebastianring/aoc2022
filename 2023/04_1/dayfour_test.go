@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	dayfour2023 "github.com/sebastianring/aoc2022/2023/4_1"
+	dayfour2023 "github.com/sebastianring/aoc2022/2023/04_1"
 )
 
 func TestScratchCards(t *testing.T) {
