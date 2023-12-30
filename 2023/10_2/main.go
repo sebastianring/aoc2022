@@ -1,4 +1,4 @@
-package dayten2023
+package daytentwo2023
 
 import (
 	"bufio"
@@ -58,13 +58,25 @@ func DayTen(filename string) (int, error) {
 	fmt.Printf("Pos x: %v y: %v\n", startPos.x, startPos.y)
 	directions := GetDirectionsFromStart(startPos, pipeMap)
 
-	for _, dirction := range directions {
-		fmt.Println(dirction.String())
+	// for _, dirction := range directions {
+	// 	fmt.Println(dirction.String())
+	// }
+
+	points2D := []Pos{}
+
+	if IsTurn(directions) {
+		fmt.Printf("Start pos is a turn!!\n")
+		points2D = append(points2D, startPos)
 	}
 
-	for _, direction := range directions {
+	steps := 0
+
+	for i, direction := range directions {
+		if i > 0 {
+			break
+		}
+
 		fmt.Printf("New starting direction: %v \n", direction.String())
-		steps := 0
 
 		p := Player{
 			Pos:       startPos,
@@ -72,20 +84,26 @@ func DayTen(filename string) (int, error) {
 		}
 
 		for !IsPlayerAtStartPos(startPos, p.Pos) || steps == 0 {
-			p.Move(pipeMap)
+			p.Move(pipeMap, &points2D)
 			steps++
 		}
 
 		fmt.Printf("Steps taken: %v \n", steps)
-
-		sum = steps / 2
 	}
+
+	points2D = append(points2D, points2D[0])
+
+	// for i, pos := range points2D {
+	// 	fmt.Printf("Point #%v x: %v y: %v \n", i, pos.x, pos.y)
+	// }
+
+	sum = Shoelace(points2D, steps)
 
 	return sum, nil
 }
 
 func IsPlayerAtStartPos(startPos Pos, playerPos Pos) bool {
-	fmt.Printf("Startpos: %v %v playerPos: %v %v \n", startPos.x, startPos.y, playerPos.x, playerPos.y)
+	// fmt.Printf("Startpos: %v %v playerPos: %v %v \n", startPos.x, startPos.y, playerPos.x, playerPos.y)
 	if startPos.x == playerPos.x && startPos.y == playerPos.y {
 		return true
 	}
@@ -93,10 +111,14 @@ func IsPlayerAtStartPos(startPos Pos, playerPos Pos) bool {
 	return false
 }
 
-func (p *Player) Move(pipeMap []string) {
+func (p *Player) Move(pipeMap []string, points *[]Pos) {
 	newPos := GetNextPos(p.Pos, p.Direction)
 	pipe := GetPipeFromPos(newPos, pipeMap)
-	fmt.Printf("Player moved from: %v %v to %v %v \n", p.x, p.y, newPos.x, newPos.y)
+	// fmt.Printf("Player moved from: %v %v to %v %v \n", p.x, p.y, newPos.x, newPos.y)
+
+	if pipe.Turn {
+		*points = append(*points, newPos)
+	}
 
 	newDir, err := pipe.GetOutFromIn(p.Direction)
 
@@ -120,6 +142,7 @@ func GetPipeFromLetter(letter byte) Pipe {
 				In:  Up,
 				Out: Right,
 			}},
+			Turn: true,
 		},
 		'J': Pipe{
 			AllowedInOut: []InOut{{
@@ -129,6 +152,7 @@ func GetPipeFromLetter(letter byte) Pipe {
 				In:  Down,
 				Out: Left,
 			}},
+			Turn: true,
 		},
 		'7': Pipe{
 			AllowedInOut: []InOut{{
@@ -138,6 +162,7 @@ func GetPipeFromLetter(letter byte) Pipe {
 				In:  Up,
 				Out: Left,
 			}},
+			Turn: true,
 		},
 		'L': Pipe{
 			AllowedInOut: []InOut{{
@@ -147,6 +172,7 @@ func GetPipeFromLetter(letter byte) Pipe {
 				In:  Down,
 				Out: Right,
 			}},
+			Turn: true,
 		},
 		'-': Pipe{
 			AllowedInOut: []InOut{{
@@ -156,6 +182,7 @@ func GetPipeFromLetter(letter byte) Pipe {
 				In:  Left,
 				Out: Left,
 			}},
+			Turn: false,
 		},
 		'|': Pipe{
 			AllowedInOut: []InOut{{
@@ -165,6 +192,7 @@ func GetPipeFromLetter(letter byte) Pipe {
 				In:  Down,
 				Out: Down,
 			}},
+			Turn: false,
 		},
 		'S': Pipe{
 			AllowedInOut: []InOut{{
@@ -179,8 +207,8 @@ func GetPipeFromLetter(letter byte) Pipe {
 			}, {
 				In:  Left,
 				Out: Left,
-			},
-			},
+			}},
+			Turn: false,
 		},
 	}
 
@@ -198,17 +226,29 @@ func GetDirectionsFromStart(pos Pos, pipeMap []string) []Direction {
 		}
 		// fmt.Printf("Checking direction: %v New pos x: %v y: %v \n", direction.String(), newPos.x, newPos.y)
 		pipe := GetPipeFromPos(newPos, pipeMap)
+
 		_, err := pipe.GetOutFromIn(direction)
 
 		if err != nil {
 			continue
 		}
 
-		fmt.Printf("Found a valid direction: %v \n", direction.String())
+		// fmt.Printf("Found a valid direction: %v \n", direction.String())
 		directions = append(directions, direction)
 	}
 
 	return directions
+}
+
+func IsTurn(directions []Direction) bool {
+	if directions[0] == Up && directions[1] == Down ||
+		directions[0] == Down && directions[1] == Up ||
+		directions[0] == Right && directions[1] == Left ||
+		directions[0] == Left && directions[1] == Right {
+		return false
+	}
+
+	return true
 }
 
 func GetPipeFromPos(pos Pos, pipeMap []string) Pipe {
@@ -259,12 +299,13 @@ type InOut struct {
 type Pipe struct {
 	AllowedInOut []InOut
 	Value        byte
+	Turn         bool
 }
 
 func (p Pipe) GetOutFromIn(in Direction) (Direction, error) {
-	fmt.Printf("Current In direction: %v\n", in.String())
+	// fmt.Printf("Current In direction: %v\n", in.String())
 	for _, InOut := range p.AllowedInOut {
-		fmt.Printf("Trying to compare to this InOut: %v \n", InOut.In.String())
+		// fmt.Printf("Trying to compare to this InOut: %v \n", InOut.In.String())
 		if InOut.In == in {
 			return InOut.Out, nil
 		}
@@ -287,4 +328,46 @@ func (d Direction) String() string {
 	default:
 		return ""
 	}
+}
+
+func Shoelace(input []Pos, steps int) int {
+	// positive := 0
+	// negative := 0
+	n := len(input)
+
+	area := 0
+	for i := 0; i < n; i++ {
+		j := (i + 1) % n
+		area += input[i].x * input[j].y
+		area -= input[j].x * input[i].y
+	}
+	//
+	// for i, pos := range input {
+	// 	fmt.Printf("I: #%v \n", i)
+	// 	if i < len(input)-1 {
+	// 		fmt.Printf("Triggered positive.\n")
+	// 		positive += pos.x * input[i+1].y
+	// 	}
+	//
+	// 	if i > 0 {
+	// 		fmt.Printf("Triggered negative.\n")
+	// 		negative += pos.x * input[i-1].y
+	// 	}
+	// }
+	//
+	// sum := positive - negative
+
+	fmt.Printf("Sum: %v Steps: %v \n", area, steps)
+
+	if area < 0 {
+		area *= -1
+	}
+
+	area -= steps
+	area /= 2
+	area += 1
+
+	fmt.Printf("Sum: %v Steps: %v FloatSum:  \n", area, steps)
+
+	return area
 }
