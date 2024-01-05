@@ -1,4 +1,4 @@
-package dayeleven2023
+package dayeleventwo2023
 
 import (
 	"bufio"
@@ -48,12 +48,12 @@ func DayEleven(filename string) (int, error) {
 	voids := universe.CheckVoids()
 	fmt.Printf("Voids rows: %v cols: %v \n", voids.Rows, voids.Cols)
 
-	universe.ExpandUniverse(voids)
-	universe.Print()
+	//universe.ExpandUniverse(voids)
+	//universe.Print()
 	galaxies := universe.GetAllGalaxies()
 	fmt.Printf("Number of galaxies: %v\n", len(galaxies))
 
-	distances := WalkAllDistances(galaxies)
+	distances := WalkAllDistances(galaxies, voids)
 
 	sum = Sum(distances)
 
@@ -265,14 +265,14 @@ func (g *Galaxy) NumberString() string {
 	return strconv.Itoa(g.Number)
 }
 
-func WalkAllDistances(galaxies []*Galaxy) []int {
+func WalkAllDistances(galaxies []*Galaxy, voids Voids) []int {
 	var results []int
 	sum := 0
 
 	for i := 0; i < len(galaxies); i++ {
 		for j := i + 1; j < len(galaxies); j++ {
 			//fmt.Printf("I: %v, J: %v Length: %v\n", i, j, len(results))
-			distance := WalkDistance(galaxies[i], galaxies[j])
+			distance := WalkDistance(galaxies[i], galaxies[j], voids)
 			sum += distance
 			results = append(results, distance)
 		}
@@ -282,13 +282,31 @@ func WalkAllDistances(galaxies []*Galaxy) []int {
 	return results
 }
 
-func WalkDistance(galaxyOne *Galaxy, galaxyTwo *Galaxy) int {
-	// fmt.Printf("Walking the distance between: #%v, #%v\n", galaxyOne.Number, galaxyTwo.Number)
+func WalkDistance(galaxyOne *Galaxy, galaxyTwo *Galaxy, voids Voids) int {
+	fmt.Printf("Walking the distance between: #%v, #%v\n", galaxyOne.Number, galaxyTwo.Number)
+	voidCtr := 0
+
+	for _, row := range voids.Rows {
+		if galaxyOne.y < row && galaxyTwo.y > row ||
+			galaxyTwo.y < row && galaxyOne.y > row {
+			voidCtr++
+		}
+	}
+
+	for _, row := range voids.Cols {
+		if galaxyOne.x < row && galaxyTwo.x > row ||
+			galaxyTwo.x < row && galaxyOne.x > row {
+			voidCtr++
+		}
+	}
+
 	diffX := Diff(galaxyOne.x, galaxyTwo.x)
 	diffY := Diff(galaxyOne.y, galaxyTwo.y)
 
-	// fmt.Printf("Distance: %v\n", diffY+diffX)
-	return diffX + diffY
+	result := diffX + diffY + (voidCtr * 1000000) - voidCtr
+
+	fmt.Printf("There were %v voids in between, thus the final result is: %v\n", voidCtr, result)
+	return result
 }
 
 func Diff(a int, b int) int {

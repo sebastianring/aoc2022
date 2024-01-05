@@ -1,13 +1,13 @@
-package dayeleven2023_test
+package dayeleventwo2023_test
 
 import (
 	"fmt"
-	dayelevent2023 "github.com/sebastianring/aoc2022/2023/11_1"
+	dayeleven2023 "github.com/sebastianring/aoc2022/2023/11_2"
 	"testing"
 )
 
 func TestDayElevenDataOne(t *testing.T) {
-	result, err := dayelevent2023.DayEleven("data.txt")
+	result, err := dayeleven2023.DayEleven("data.txt")
 
 	if err != nil {
 		t.Fatal("Error: ", err)
@@ -18,7 +18,7 @@ func TestDayElevenDataOne(t *testing.T) {
 }
 
 func TestDayElevenDataTwo(t *testing.T) {
-	result, err := dayelevent2023.DayEleven("data2.txt")
+	result, err := dayeleven2023.DayEleven("data2.txt")
 
 	if err != nil {
 		t.Fatal("Error: ", err)
@@ -29,7 +29,7 @@ func TestDayElevenDataTwo(t *testing.T) {
 }
 
 func TestDayElevenDataThree(t *testing.T) {
-	result, err := dayelevent2023.DayEleven("data3.txt")
+	result, err := dayeleven2023.DayEleven("data3.txt")
 
 	if err != nil {
 		t.Fatal("Error: ", err)
