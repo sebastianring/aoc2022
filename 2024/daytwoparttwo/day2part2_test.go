@@ -1,4 +1,4 @@
-package daytwopartone
+package daytwoparttwo
 
 import "testing"
 
@@ -17,7 +17,7 @@ func TestDay2Part1(t *testing.T) {
 			args: args{
 				filename: "data_example.txt",
 			},
-			want:    2,
+			want:    0,
 			wantErr: false,
 		},
 		{
@@ -25,13 +25,13 @@ func TestDay2Part1(t *testing.T) {
 			args: args{
 				filename: "data.txt",
 			},
-			want:    486,
+			want:    2,
 			wantErr: false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := Day2Part1(tt.args.filename)
+			got, err := Day2Part2(tt.args.filename)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("DayOne() error = %v, wantErr %v", err, tt.wantErr)
 				return
