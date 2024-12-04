@@ -49,11 +49,6 @@ func DayOne(filename string) (int, error) {
 			mul = findStr(totalData[mul+4:], "mul(", do)
 		}
 
-		// if nextMul != -1 && nextMul < nextDont || nextDont == -1 && nextMul > 0 {
-		// 	score := getMulValues(lineString[nextMul+4:])
-		// 	sum += score
-		// }
-
 		if do > len(totalData)-1 || mul == -1 {
 			break
 		}
