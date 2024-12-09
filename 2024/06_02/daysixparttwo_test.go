@@ -20,7 +20,23 @@ func TestDayOne(t *testing.T) {
 		// 	args: args{
 		// 		filename: "data_example.txt",
 		// 	},
-		// 	want:    41,
+		// 	want:    6,
+		// 	wantErr: false,
+		// },
+		// {
+		// 	name: "example2",
+		// 	args: args{
+		// 		filename: "data_example2.txt",
+		// 	},
+		// 	want:    1,
+		// 	wantErr: false,
+		// },
+		// {
+		// 	name: "example3",
+		// 	args: args{
+		// 		filename: "data_example3.txt",
+		// 	},
+		// 	want:    4,
 		// 	wantErr: false,
 		// },
 		{
@@ -28,7 +44,7 @@ func TestDayOne(t *testing.T) {
 			args: args{
 				filename: "data.txt",
 			},
-			want:    41,
+			want:    917, //too low // 1998 too high // 1895 too high
 			wantErr: false,
 		},
 	}
