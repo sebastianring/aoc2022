@@ -262,7 +262,6 @@ func calcResultPartTwo(values []int, p []string) int {
 	return curValue
 
 	// allNumbers = append(allNumbers, prevVal)
-
 	// return addition(allNumbers...)
 }
 
