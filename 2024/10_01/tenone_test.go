@@ -1,47 +1,45 @@
-package nineone
+package tenone
 
-import (
-	"testing"
-)
+import "testing"
 
-func TestNineOne(t *testing.T) {
+func TestTenOne(t *testing.T) {
 	type args struct {
 		filename string
 	}
 	tests := []struct {
-		name     string
-		args     args
-		want     int
-		wantErr  bool
-		expected string
+		name    string
+		args    args
+		want    int
+		wantErr bool
 	}{
 		{
 			name: "example",
 			args: args{
 				filename: "data_example.txt",
 			},
-			want:     1928,
-			wantErr:  false,
-			expected: "0099811188827773336446555566..............",
+			want:    1,
+			wantErr: false,
+		},
+		{
+			name: "example 2",
+			args: args{
+				filename: "data_example2.txt",
+			},
+			want:    36,
+			wantErr: false,
 		},
 		{
 			name: "real",
 			args: args{
 				filename: "data.txt",
 			},
-			want:     6382875730645,
-			wantErr:  false,
-			expected: "",
+			want:    468,
+			wantErr: false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := nineOne(tt.args.filename)
-			// fmt.Printf(" ")
-			// for i := 0; i < len(tt.expected); i++ {
-			// 	fmt.Printf("%s ", tt.expected[i:i+1])
-			// }
-			// fmt.Println()
+			got, err := TenOne(tt.args.filename)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("DayOne() error = %v, wantErr %v", err, tt.wantErr)
 				return
