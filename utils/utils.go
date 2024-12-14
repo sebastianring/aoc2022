@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-func removeAtIndex[T any](s []T, index int) []T {
+func RemoveAtIndex[T any](s []T, index int) []T {
 	if index < 0 || index >= len(s) {
 		return s
 	}
@@ -15,7 +15,7 @@ func removeAtIndex[T any](s []T, index int) []T {
 	return result
 }
 
-func outOfBounds[T any](board [][]T, x, y int) bool {
+func OutOfBounds[T any](board [][]T, x, y int) bool {
 	if x < 0 || y < 0 || y > len(board)-1 || x > len(board[y])-1 {
 		return true
 	}
@@ -23,7 +23,7 @@ func outOfBounds[T any](board [][]T, x, y int) bool {
 	return false
 }
 
-func printBoard[T any](board [][]T, x, y int, char T) {
+func PrintBoard[T any](board [][]T, x, y int, char T) {
 	fmt.Println("--------")
 	for boardY, row := range board {
 		if y == boardY {
