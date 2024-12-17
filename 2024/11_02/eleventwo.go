@@ -1,4 +1,4 @@
-package elevenone
+package eleventwo
 
 import (
 	"bufio"
@@ -6,12 +6,11 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/sebastianring/aoc2022/utils"
 )
 
-func eleven(filename string) (int, error) {
+func eleventwo(filename string) (int, error) {
 	file, err := os.Open(filename)
 
 	if err != nil {
@@ -41,37 +40,51 @@ func eleven(filename string) (int, error) {
 	}
 
 	fmt.Println(data)
-	// rule 1: if 0 -> 1
-	// rule 2: even number of digits -> split into 2
-	// rule 3: else -> multiplied with 2024
-	// fmt.Printf("checking #%d, val: %s\n", i+j, data[i+j])
-	//
 
-	maxBlinks := 75
-	dataresult := []string{}
+	stoneMap := dataToMap(data)
+	blinks := 75
 
-	for i := 0; i < len(data); i++ {
-		oldData := []string{data[i]}
-		for blinkCtr := 0; blinkCtr < maxBlinks; blinkCtr++ {
-			newData := []string{}
-			for j := 0; j < len(oldData); j++ {
-				val := oldData[j]
-				operation := checkValue(val)
-				result := operation(val)
-				newData = append(newData, result...)
-			}
-
-			oldData = newData
-		}
-
-		dataresult = append(dataresult, oldData...)
-		fmt.Println(time.Now().UTC())
+	for i := 0; i < blinks; i++ {
+		stoneMap = blink(stoneMap)
 	}
 
-	sum = len(dataresult)
+	for _, ctr := range stoneMap {
+		sum += ctr
+	}
 
 	return sum, nil
 }
+
+func blink(data map[string]int) map[string]int {
+	newMap := map[string]int{}
+
+	for val, ctr := range data {
+		operation := checkValue(val)
+		result := operation(val)
+
+		for _, r := range result {
+			newMap[r] += ctr
+		}
+	}
+
+	return newMap
+}
+
+func dataToMap(data []string) map[string]int {
+	result := map[string]int{}
+	for _, d := range data {
+		result[d] += 1
+	}
+
+	return result
+}
+
+// val := oldData[j]
+// 				operation := checkValue(val)
+// 				result := operation(val)
+// 				memo[oldData[j]] = result
+//
+// 				newData = append(newData, result...)
 
 type manipulate func(string) []string
 
