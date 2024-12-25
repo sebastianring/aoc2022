@@ -17,7 +17,7 @@ func TestTwelveOne(t *testing.T) {
 			args: args{
 				filename: "data_example.txt",
 			},
-			want:    -1,
+			want:    140,
 			wantErr: false,
 		},
 		{
@@ -25,7 +25,15 @@ func TestTwelveOne(t *testing.T) {
 			args: args{
 				filename: "data_example2.txt",
 			},
-			want:    -1,
+			want:    1930,
+			wantErr: false,
+		},
+		{
+			name: "real",
+			args: args{
+				filename: "data.txt",
+			},
+			want:    1930,
 			wantErr: false,
 		},
 	}
@@ -33,11 +41,11 @@ func TestTwelveOne(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := TwelveOne(tt.args.filename)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("DayOne() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("Twelve() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if got != tt.want {
-				t.Errorf("DayOne() = %v, want %v", got, tt.want)
+				t.Errorf("Twelve() = %v, want %v", got, tt.want)
 			}
 		})
 	}
