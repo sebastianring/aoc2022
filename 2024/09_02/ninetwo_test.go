@@ -25,15 +25,15 @@ func TestNineOne(t *testing.T) {
 			wantErr:  false,
 			expected: "00992111777.44.333....5555.6666.....8888..",
 		},
-		// {
-		// 	name: "real",
-		// 	args: args{
-		// 		filename: "data.txt",
-		// 	},
-		// 	want:     6382875730645,
-		// 	wantErr:  false,
-		// 	expected: "", //8582381894860 too high
-		// },
+		{
+			name: "real",
+			args: args{
+				filename: "data.txt",
+			},
+			want:     6382875730645,
+			wantErr:  false,
+			expected: "", //8582381894860 too high
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

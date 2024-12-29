@@ -39,10 +39,6 @@ func (f *fileid) getDots() []string {
 	return result
 }
 
-// func (f *fileid) getValue() string {
-// 	return strconv.Itoa(f.id)
-// }
-
 func (f *fileid) getEndIndex() int {
 	return f.index + f.length
 }
