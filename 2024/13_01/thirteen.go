@@ -22,7 +22,6 @@ type pos struct {
 
 func Thirteen(filename string) (int, error) {
 	file, err := os.Open(filename)
-
 	if err != nil {
 		return 0, err
 	}
@@ -33,11 +32,10 @@ func Thirteen(filename string) (int, error) {
 	sum := 0
 	i := 0
 	scenarios := []*scenario{}
-	var currentScenario = &scenario{}
+	currentScenario := &scenario{}
 
 	for {
 		lineString, err := reader.ReadString('\n')
-
 		if err != nil {
 			if err.Error() == "EOF" {
 				break
@@ -99,18 +97,13 @@ func Thirteen(filename string) (int, error) {
 	for _, scenario := range scenarios {
 		fmt.Println("--------")
 		fmt.Println(scenario)
-		// fmt.Println("button a")
-		// fmt.Println(scenario.prize.x % scenario.buttonA.x)
-		// fmt.Println(scenario.prize.y % scenario.buttonA.y)
-		// fmt.Println("button b")
-		// fmt.Println(scenario.prize.x % scenario.buttonB.x)
-		// fmt.Println(scenario.prize.y % scenario.buttonB.y)
 
-		// res := permutate(scenario)
-		// fmt.Println("got result: ", res)
+		ok, val := scenario.converge()
+		fmt.Println(ok, val)
+		if ok {
+			sum += val
+		}
 
-		converge, f := scenario.converge()
-		fmt.Println(converge, f)
 		fmt.Println("--------")
 	}
 
@@ -172,17 +165,54 @@ func (s *scenario) converge() (bool, int) {
 	y := 0
 	i := 0
 
-	for x < s.prize.x && y < s.prize.y {
-		x += s.buttonB.x
-		y += s.buttonB.y
+	// do i need to consider value? most likely
+	valueRatio := float32((s.buttonB.x + s.buttonB.y) / (s.buttonA.x + s.buttonB.y))
+	fmt.Printf("value ratio: %v - sum b: %v a: %v\n", valueRatio, (s.buttonB.x + s.buttonB.y), (s.buttonA.x + s.buttonA.y))
 
-		if x%s.buttonA.x == 0 && y%s.buttonA.y == 0 {
-			fmt.Printf("convergence found at %d %d %d\n", x, y, i)
-			return true, 0
-		}
+	var primary pos
+	primaryCost := 1
+	var secondary pos
+	secondaryCost := 3
 
-		i++
+	if valueRatio >= 3.0 {
+		fmt.Printf("high value ratio %v\n", valueRatio)
+		fmt.Printf("=========================\n")
+		primary = s.buttonA
+		primaryCost = 3
+		secondary = s.buttonB
+		secondaryCost = 1
+	} else {
+		fmt.Printf("low value ratio %v\n", valueRatio)
+		primary = s.buttonB
+		secondary = s.buttonA
 	}
 
-	return false, 0
+	for x < s.prize.x && y < s.prize.y {
+		xmod, xrem := DivMod((s.prize.x - x), primary.x)
+		ymod, yrem := DivMod((s.prize.y - y), primary.y)
+
+		if xmod == ymod && xrem == 0 && yrem == 0 {
+			fmt.Printf("convergence found at %d %d %d\n", x, y, i)
+			return true, i + (primaryCost * xmod)
+		}
+
+		// if x%primary.x == 0 && y%primary.y == 0 {
+		// 	fmt.Printf("convergence found at %d %d %d\n", x, y, i)
+		// 	return true, i
+		// }
+
+		x += secondary.x
+		y += secondary.y
+		i += secondaryCost
+	}
+
+	if x == s.prize.x && y == s.prize.y {
+		return true, i
+	}
+
+	return false, i
+}
+
+func DivMod(a, b int) (quotient, remainder int) {
+	return a / b, a % b
 }

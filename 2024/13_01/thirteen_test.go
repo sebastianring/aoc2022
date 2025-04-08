@@ -17,7 +17,25 @@ func TestDayOne(t *testing.T) {
 			args: args{
 				filename: "data_example.txt",
 			},
-			want:    -1,
+			want:    480,
+			wantErr: false,
+		},
+		{
+			name: "real data",
+			args: args{
+				filename: "data.txt",
+			},
+			// 35887 too low
+			want:    35886,
+			wantErr: false,
+		},
+		{
+			name: "3",
+			args: args{
+				filename: "data_3.txt",
+			},
+			// 35887 too low
+			want:    35886,
 			wantErr: false,
 		},
 	}
