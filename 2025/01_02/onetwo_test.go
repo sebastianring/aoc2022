@@ -1,4 +1,4 @@
-package oneone
+package onetwo
 
 import "testing"
 
@@ -17,7 +17,7 @@ func TestDayOne(t *testing.T) {
 			args: args{
 				filename: "data_example.txt",
 			},
-			want:    3,
+			want:    6,
 			wantErr: false,
 		},
 		{
@@ -25,19 +25,19 @@ func TestDayOne(t *testing.T) {
 			args: args{
 				filename: "data.txt",
 			},
-			want:    1100,
+			want:    6364, // too large, 5805 too small
 			wantErr: false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := OneOne(tt.args.filename)
+			got, err := OneTwo(tt.args.filename)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("DayOne() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("OneTwo() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if got != tt.want {
-				t.Errorf("DayOne() = %v, want %v", got, tt.want)
+				t.Errorf("OneTwo() = %v, want %v", got, tt.want)
 			}
 		})
 	}

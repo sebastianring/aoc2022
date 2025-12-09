@@ -1,4 +1,4 @@
-package oneone
+package onetwo
 
 import (
 	"bufio"
@@ -12,11 +12,12 @@ import (
 )
 
 type Rotation struct {
-	Direction string
-	Clicks    int
+	Direction     string
+	Clicks        int
+	FullRotations int
 }
 
-func OneOne(filename string) (int, error) {
+func OneTwo(filename string) (int, error) {
 	file, err := os.Open(filename)
 	if err != nil {
 		return 0, err
@@ -41,12 +42,12 @@ func OneOne(filename string) (int, error) {
 			log.Fatalf("issue converting string %s", err.Error())
 		}
 
-		_, remainder := utils.DivMod(clicks, 100)
+		quotient, remainder := utils.DivMod(clicks, 100)
 
 		rotations = append(rotations, Rotation{
-			Direction: string(lineString[0]),
-			Clicks:    remainder,
-			// Clicks:    clicks,
+			Direction:     string(lineString[0]),
+			Clicks:        remainder,
+			FullRotations: quotient,
 		})
 	}
 
@@ -54,27 +55,50 @@ func OneOne(filename string) (int, error) {
 	pos := 50
 
 	for _, rot := range rotations {
+		startP := pos
+
+		if rot.FullRotations > 0 {
+			fmt.Println("starting pos", pos)
+		}
+
 		if rot.Direction == "R" {
 			pos += rot.Clicks
 		} else {
 			pos -= rot.Clicks
 		}
 
-		fmt.Println(rot.Direction, rot.Clicks)
-		fmt.Println("pos before fixing", pos)
+		if rot.FullRotations > 0 {
+			fmt.Println(rot.Direction, rot.Clicks, rot.FullRotations, zeroHits)
+			fmt.Println("pos before fixing", pos)
+		}
+
+		zeroHits += rot.FullRotations
 
 		if pos > 99 {
 			pos -= 100
+			zeroHits++
 		} else if pos < 0 {
 			pos = 100 + pos
+			if startP != 0 {
+				zeroHits++
+			}
 		}
 
-		if pos == 0 {
-			zeroHits++
-		}
+		// [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+		//        |
+		//  pos = 3
+		//  L5
+		//
+		// [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+		//                       |
+		//
+		//   2 - 5 = -2
 
-		fmt.Println("pos after fixing", pos)
-		fmt.Println("---------")
+		if rot.FullRotations > 0 {
+			fmt.Println("pos after fixing", pos)
+			fmt.Println("zero hits after", zeroHits)
+			fmt.Println("---------")
+		}
 	}
 
 	return zeroHits, nil
