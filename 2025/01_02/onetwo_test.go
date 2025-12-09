@@ -2,7 +2,7 @@ package onetwo
 
 import "testing"
 
-func TestDayOne(t *testing.T) {
+func TestDayOneTwo(t *testing.T) {
 	type args struct {
 		filename string
 	}
@@ -25,7 +25,7 @@ func TestDayOne(t *testing.T) {
 			args: args{
 				filename: "data.txt",
 			},
-			want:    6364, // too large, 5805 too small
+			want:    6358,
 			wantErr: false,
 		},
 	}

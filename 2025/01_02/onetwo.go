@@ -12,9 +12,8 @@ import (
 )
 
 type Rotation struct {
-	Direction     string
-	Clicks        int
-	FullRotations int
+	Direction string
+	Clicks    int
 }
 
 func OneTwo(filename string) (int, error) {
@@ -42,12 +41,9 @@ func OneTwo(filename string) (int, error) {
 			log.Fatalf("issue converting string %s", err.Error())
 		}
 
-		quotient, remainder := utils.DivMod(clicks, 100)
-
 		rotations = append(rotations, Rotation{
-			Direction:     string(lineString[0]),
-			Clicks:        remainder,
-			FullRotations: quotient,
+			Direction: string(lineString[0]),
+			Clicks:    clicks,
 		})
 	}
 
@@ -55,50 +51,35 @@ func OneTwo(filename string) (int, error) {
 	pos := 50
 
 	for _, rot := range rotations {
-		startP := pos
-
-		if rot.FullRotations > 0 {
-			fmt.Println("starting pos", pos)
-		}
+		fmt.Println("start pos", pos)
+		fmt.Println("start zero", zeroHits)
+		newPos := pos
+		q, r := utils.DivMod(rot.Clicks, 100)
+		fmt.Println(rot.Direction, rot.Clicks, q, r)
+		zeroHits += q
 
 		if rot.Direction == "R" {
-			pos += rot.Clicks
+			newPos += r
+			if newPos > 99 {
+				zeroHits++
+				newPos = newPos - 100
+			}
 		} else {
-			pos -= rot.Clicks
-		}
-
-		if rot.FullRotations > 0 {
-			fmt.Println(rot.Direction, rot.Clicks, rot.FullRotations, zeroHits)
-			fmt.Println("pos before fixing", pos)
-		}
-
-		zeroHits += rot.FullRotations
-
-		if pos > 99 {
-			pos -= 100
-			zeroHits++
-		} else if pos < 0 {
-			pos = 100 + pos
-			if startP != 0 {
+			newPos -= r
+			fmt.Println("negative new pos", newPos)
+			if newPos < 0 {
+				if pos != 0 {
+					zeroHits++
+				}
+				newPos = 100 + newPos
+			} else if newPos == 0 {
 				zeroHits++
 			}
 		}
 
-		// [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-		//        |
-		//  pos = 3
-		//  L5
-		//
-		// [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-		//                       |
-		//
-		//   2 - 5 = -2
-
-		if rot.FullRotations > 0 {
-			fmt.Println("pos after fixing", pos)
-			fmt.Println("zero hits after", zeroHits)
-			fmt.Println("---------")
-		}
+		pos = newPos
+		fmt.Println("end pos", pos)
+		fmt.Println("end zero", zeroHits)
 	}
 
 	return zeroHits, nil
