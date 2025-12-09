@@ -76,3 +76,7 @@ func PrintBoard[T any](board [][]T, x, y int, char T) {
 		}
 	}
 }
+
+func DivMod(a, b int) (quotient, remainder int) {
+	return a / b, a % b
+}
