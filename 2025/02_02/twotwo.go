@@ -55,7 +55,6 @@ func TwoTwo(filename string) (int, error) {
 	}
 
 	for _, interval := range intervals {
-		// odd intervals no need to check
 		fmt.Println("start: ", interval.Start, " end: ", interval.End)
 		// fmt.Println("diff", interval.End-interval.Start)
 		ctr := interval.Start
@@ -90,7 +89,6 @@ func TwoTwo(filename string) (int, error) {
 				}
 			}
 
-			// ctr = newCtr(strLen)
 			ctr++
 			fmt.Println("new ctr: ", ctr)
 			fmt.Println("------")
@@ -127,17 +125,6 @@ func toInts(inputs []string) []int {
 		newInt, _ := strconv.Atoi(inp)
 		res = append(res, newInt)
 	}
-
-	return res
-}
-
-func newCtr(n int) int {
-	start := "1"
-	for range n {
-		start += "0"
-	}
-
-	res, _ := strconv.Atoi(start)
 
 	return res
 }
