@@ -4,6 +4,15 @@ import (
 	"fmt"
 )
 
+func SplitBySize(s string, size int) []string {
+	var result []string
+	for i := 0; i < len(s); i += size {
+		end := min(i+size, len(s))
+		result = append(result, s[i:end])
+	}
+	return result
+}
+
 func RemoveAtIndex[T any](s []T, index int) []T {
 	if index < 0 || index >= len(s) {
 		return s
