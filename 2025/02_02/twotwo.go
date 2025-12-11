@@ -2,7 +2,6 @@ package twotwo
 
 import (
 	"bufio"
-	"fmt"
 	"os"
 	"strconv"
 	"strings"
@@ -55,7 +54,7 @@ func TwoTwo(filename string) (int, error) {
 	}
 
 	for _, interval := range intervals {
-		fmt.Println("start: ", interval.Start, " end: ", interval.End)
+		// fmt.Println("start: ", interval.Start, " end: ", interval.End)
 		// fmt.Println("diff", interval.End-interval.Start)
 		ctr := interval.Start
 
@@ -82,7 +81,7 @@ func TwoTwo(filename string) (int, error) {
 					if j == len(partsInt)-1 {
 						res := mergeInts(partsInt)
 						if res <= interval.End {
-							fmt.Println("added: ", res)
+							// fmt.Println("added: ", res)
 							sums[mergeInts(partsInt)] = true
 						}
 					}
@@ -90,12 +89,12 @@ func TwoTwo(filename string) (int, error) {
 			}
 
 			ctr++
-			fmt.Println("new ctr: ", ctr)
-			fmt.Println("------")
+			// fmt.Println("new ctr: ", ctr)
+			// fmt.Println("------")
 		}
 	}
 
-	fmt.Println(sums)
+	// fmt.Println(sums)
 	for k := range sums {
 		sum += k
 	}

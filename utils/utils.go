@@ -2,7 +2,24 @@ package utils
 
 import (
 	"fmt"
+	"strconv"
 )
+
+func MergeInts(inputs []int) int {
+	string := FromIntsToStr(inputs)
+	res, _ := strconv.Atoi(string)
+
+	return res
+}
+
+func FromIntsToStr(inputs []int) string {
+	res := ""
+	for _, input := range inputs {
+		res += strconv.Itoa(input)
+	}
+
+	return res
+}
 
 func SplitBySize(s string, size int) []string {
 	var result []string
