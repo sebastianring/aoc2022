@@ -17,7 +17,7 @@ func FourOneSolution(lines []string) int {
 	for y, line := range lines {
 		for x, val := range line {
 			if val == rune('@') {
-				AddAdjacentScores(x, y, h, w, scoreBoard)
+				AdjustAdjescentScore(x, y, h, w, scoreBoard, 1)
 			}
 		}
 	}
@@ -26,7 +26,7 @@ func FourOneSolution(lines []string) int {
 		for x, val := range line {
 			if val == rune('@') {
 				if scoreBoard[y][x] < 4 {
-					sum++
+					adjusted := AdjustAdjescentScore(x, y, h, w, scoreBoard, -1)
 				}
 			}
 		}
@@ -35,7 +35,14 @@ func FourOneSolution(lines []string) int {
 	return sum
 }
 
-func AddAdjacentScores(x, y, h, w int, scoreBoard [][]int) {
+func Cascade(adjusted [][]int, h, w int, scoreBoard [][]int, lines []string) {
+	for _, adj := range adjusted {
+	}
+}
+
+func AdjustAdjescentScore(x, y, h, w int, scoreBoard [][]int, val int) [][]int {
+	adjusted := [][]int{}
+
 	for xOffset := -1; xOffset <= 1; xOffset++ {
 		for yOffset := -1; yOffset <= 1; yOffset++ {
 			if yOffset == 0 && xOffset == 0 {
@@ -43,10 +50,13 @@ func AddAdjacentScores(x, y, h, w int, scoreBoard [][]int) {
 			}
 
 			if ValidPos(x+xOffset, y+yOffset, h, w) {
-				scoreBoard[y+yOffset][x+xOffset]++
+				scoreBoard[y+yOffset][x+xOffset] += val
+				adjusted = append(adjusted, []int{x + xOffset, y + yOffset})
 			}
 		}
 	}
+
+	return adjusted
 }
 
 func FormatData(lines []string) [][]int {
