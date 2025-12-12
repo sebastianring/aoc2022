@@ -2,13 +2,13 @@ package daytwo_test
 
 import (
 	"fmt"
-	"github.com/sebastianring/aoc2022/2_daytwo"
 	"testing"
+
+	daytwo "github.com/sebastianring/aoc2022/misc/2_daytwo"
 )
 
 func TestRockPaperScissor(t *testing.T) {
 	result, err := daytwo.RockPaperScissor("data.txt")
-
 	if err != nil {
 		t.Fatal("Error: ", err)
 	}
@@ -19,7 +19,6 @@ func TestRockPaperScissor(t *testing.T) {
 
 func TestRockPaperScissorPartTwo(t *testing.T) {
 	result, err := daytwo.RockPaperScissorPartTwo("data.txt")
-
 	if err != nil {
 		t.Fatal("Error: ", err)
 	}
@@ -30,7 +29,6 @@ func TestRockPaperScissorPartTwo(t *testing.T) {
 
 func TestRockPaperScissorPartTwoDataTwo(t *testing.T) {
 	result, err := daytwo.RockPaperScissorPartTwo("data2.txt")
-
 	if err != nil {
 		t.Fatal("Error: ", err)
 	}
