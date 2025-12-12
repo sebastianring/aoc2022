@@ -19,7 +19,7 @@ func TestSolution(t *testing.T) {
 			args: args{
 				filename: "data_example.txt",
 			},
-			want:    3121910778619,
+			want:    13,
 			wantErr: false,
 		},
 		{
@@ -27,7 +27,7 @@ func TestSolution(t *testing.T) {
 			args: args{
 				filename: "data.txt",
 			},
-			want: 172981362045136,
+			want: 1376,
 
 			wantErr: false,
 		},

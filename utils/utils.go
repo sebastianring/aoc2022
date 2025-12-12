@@ -74,11 +74,7 @@ func AddAtIndex[T any](s []T, index int, val T) []T {
 }
 
 func IsEven(i int) bool {
-	if i%2 == 0 {
-		return true
-	}
-
-	return false
+	return i%2 == 0
 }
 
 func OutOfBounds[T any](board [][]T, x, y int) bool {
