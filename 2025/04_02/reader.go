@@ -1,4 +1,4 @@
-package fourone
+package fourtwo
 
 import (
 	"bufio"

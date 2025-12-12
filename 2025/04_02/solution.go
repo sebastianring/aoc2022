@@ -1,4 +1,4 @@
-package fourone
+package fourtwo
 
 func FourOneSolution(lines []string) int {
 	sum := 0
