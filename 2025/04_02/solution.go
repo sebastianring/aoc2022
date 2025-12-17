@@ -1,5 +1,9 @@
 package fourtwo
 
+import (
+	"fmt"
+)
+
 func FourOneSolution(lines []string) int {
 	sum := 0
 	h := len(lines)
@@ -7,37 +11,38 @@ func FourOneSolution(lines []string) int {
 
 	scoreBoard := FormatData(lines)
 
-	// for _, col := range scoreBoard {
-	// 	for _, val := range col {
-	// 		fmt.Printf("%d", val)
-	// 	}
-	// 	fmt.Printf("\n")
-	// }
-
+	startingPoints := [][]int{}
 	for y, line := range lines {
 		for x, val := range line {
 			if val == rune('@') {
 				AdjustAdjescentScore(x, y, h, w, scoreBoard, 1)
+				startingPoints = append(startingPoints, []int{x, y})
 			}
 		}
 	}
 
-	for y, line := range lines {
-		for x, val := range line {
-			if val == rune('@') {
-				if scoreBoard[y][x] < 4 {
-					adjusted := AdjustAdjescentScore(x, y, h, w, scoreBoard, -1)
-				}
-			}
+	return Cascade(startingPoints, h, w, scoreBoard, lines, sum)
+}
+
+func Cascade(adjusted [][]int, h, w int, scoreBoard [][]int, lines []string, sum int) int {
+	if len(adjusted) == 0 {
+		return sum
+	}
+
+	sum = 0
+
+	for _, adj := range adjusted {
+		x := adj[0]
+		y := adj[1]
+
+		if scoreBoard[y][x] < 4 && lines[y][x] == '@' {
+			lines[y] = lines[y][:x] + "r" + lines[y][x+1:]
+			sum++
+			sum += Cascade(AdjustAdjescentScore(x, y, h, w, scoreBoard, -1), h, w, scoreBoard, lines, sum)
 		}
 	}
 
 	return sum
-}
-
-func Cascade(adjusted [][]int, h, w int, scoreBoard [][]int, lines []string) {
-	for _, adj := range adjusted {
-	}
 }
 
 func AdjustAdjescentScore(x, y, h, w int, scoreBoard [][]int, val int) [][]int {
@@ -57,6 +62,14 @@ func AdjustAdjescentScore(x, y, h, w int, scoreBoard [][]int, val int) [][]int {
 	}
 
 	return adjusted
+}
+
+func PrintBoard(lines []string) {
+	for _, line := range lines {
+		fmt.Println(line)
+	}
+
+	fmt.Println("------------------")
 }
 
 func FormatData(lines []string) [][]int {
