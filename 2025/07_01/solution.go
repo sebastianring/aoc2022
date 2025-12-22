@@ -26,24 +26,43 @@ func (l *laser) split() []*laser {
 	return []*laser{&l1, &l2}
 }
 
-func Template(lines []string) int {
+func SevenOne(lines []string) int {
 	sum := 0
 	lasers := []*laser{FormatData(lines)}
 
 	for range len(lines) - 1 {
 		fmt.Println("-----")
+		newLasers := []*laser{}
 		for _, l := range lasers {
 			l.move(0, 1)
-			if string(lines[l.y][l.x]) == "^" {
-				split := l.split(line[y])
-			}
 
-			lines[l.y] = lines[l.y][:l.x] + "|" + lines[l.y][l.x+1:]
+			if string(lines[l.y][l.x]) == "^" {
+				split := l.split()
+
+				hit := false
+				for _, s := range split {
+					if lines[s.y][s.x] != '|' {
+						hit = true
+						newLasers = append(newLasers, s)
+						lines[s.y] = lines[s.y][:s.x] + "|" + lines[s.y][s.x+1:]
+					}
+				}
+
+				if hit {
+					sum++
+				}
+			} else {
+				newLasers = append(newLasers, l)
+				lines[l.y] = lines[l.y][:l.x] + "|" + lines[l.y][l.x+1:]
+			}
 		}
+
+		lasers = newLasers
 
 		for _, line := range lines {
 			fmt.Println(line)
 		}
+		fmt.Println(sum)
 	}
 
 	return sum

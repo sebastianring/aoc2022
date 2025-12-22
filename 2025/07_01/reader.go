@@ -16,7 +16,8 @@ func Solution(filename string) (int, error) {
 
 	reader := bufio.NewReader(file)
 	lines := GetLines(reader)
-	return Template(lines), nil
+
+	return SevenOne(lines), nil
 }
 
 func GetLines(reader *bufio.Reader) []string {
