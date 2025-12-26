@@ -1,6 +1,9 @@
 package seventwo
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 type laser struct {
 	x int
@@ -12,51 +15,64 @@ func (l *laser) move(dx, dy int) {
 	l.y += dy
 }
 
-func (l *laser) split() []*laser {
-	l1 := laser{
-		x: l.x - 1,
-		y: l.y,
+func (l *laser) colllisionCheck(board []string, sum int) (bool, int) {
+	if board[l.y][l.x] == '^' {
+		sum = l.spawn(board, sum)
+		return true, sum
 	}
 
-	l2 := laser{
-		x: l.x + 1,
-		y: l.y,
-	}
-
-	return []*laser{&l1, &l2}
+	return false, sum
 }
 
-func SevenOne(lines []string) int {
-	sum := 0
-	lasers := []*laser{FormatData(lines)}
+func (l *laser) spawn(board []string, sum int) int {
+	l1 := l.mutate(true)
+	sum = l1.shoot(board, sum)
 
-	for range len(lines) - 1 {
-		fmt.Println("-----")
-		newLasers := []*laser{}
-		for _, l := range lasers {
-			l.move(0, 1)
+	l2 := l.mutate(false)
+	return sum + l2.shoot(board, sum)
+}
 
-			if string(lines[l.y][l.x]) == "^" {
-				split := l.split()
-				for _, s := range split {
-					if lines[s.y][s.x] != '|' {
-						newLasers = append(newLasers, s)
-						lines[s.y] = lines[s.y][:s.x] + "|" + lines[s.y][s.x+1:]
-					}
-				}
-			} else {
-				newLasers = append(newLasers, l)
-				lines[l.y] = lines[l.y][:l.x] + "|" + lines[l.y][l.x+1:]
-			}
-		}
+func (l *laser) mutate(left bool) *laser {
+	newLaser := *l
 
-		lasers = newLasers
-
-		for _, line := range lines {
-			fmt.Println(line)
-		}
-		fmt.Println(sum)
+	if left {
+		newLaser.x += -1
+	} else {
+		newLaser.x += 1
 	}
+
+	return &newLaser
+}
+
+func (l *laser) shoot(lines []string, sum int) int {
+	board := []string{}
+	board = append(board, lines...)
+
+	for {
+		board[l.y] = board[l.y][:l.x] + "|" + board[l.y][l.x+1:]
+		lines[l.y] = lines[l.y][:l.x] + "|" + lines[l.y][l.x+1:]
+		for _, b := range lines {
+			fmt.Println(b)
+		}
+
+		l.move(0, 1)
+		time.Sleep(10 * time.Millisecond)
+		if l.y == len(board)-1 {
+			sum++
+			return sum
+		}
+
+		col, ends := l.colllisionCheck(lines, sum)
+		if col {
+			return ends
+		}
+	}
+}
+
+func SevenTwo(lines []string) int {
+	sum := 0
+	originLaser := FormatData(lines)
+	sum = originLaser.shoot(lines, sum)
 
 	return sum
 }

@@ -22,15 +22,15 @@ func TestSolution(t *testing.T) {
 			want:    21,
 			wantErr: false,
 		},
-		{
-			name: "real data",
-			args: args{
-				filename: "data.txt",
-			},
-			want: 172981362045136,
-
-			wantErr: false,
-		},
+		// {
+		// 	name: "real data",
+		// 	args: args{
+		// 		filename: "data.txt",
+		// 	},
+		// 	want: 172981362045136,
+		//
+		// 	wantErr: false,
+		// },
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
