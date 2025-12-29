@@ -19,18 +19,18 @@ func TestSolution(t *testing.T) {
 			args: args{
 				filename: "data_example.txt",
 			},
-			want:    21,
+			want:    40,
 			wantErr: false,
 		},
-		// {
-		// 	name: "real data",
-		// 	args: args{
-		// 		filename: "data.txt",
-		// 	},
-		// 	want: 172981362045136,
-		//
-		// 	wantErr: false,
-		// },
+		{
+			name: "real data",
+			args: args{
+				filename: "data.txt",
+			},
+			want: 3806264447357,
+
+			wantErr: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

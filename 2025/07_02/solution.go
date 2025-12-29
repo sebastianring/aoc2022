@@ -1,9 +1,8 @@
 package seventwo
 
-import (
-	"fmt"
-	"time"
-)
+import "strconv"
+
+var seen map[string]int = make(map[string]int)
 
 type laser struct {
 	x int
@@ -25,11 +24,22 @@ func (l *laser) colllisionCheck(board []string, sum int) (bool, int) {
 }
 
 func (l *laser) spawn(board []string, sum int) int {
+	if s, ok := seen[l.posStr()]; ok {
+		return s
+	}
+
 	l1 := l.mutate(true)
-	sum = l1.shoot(board, sum)
+	sum += l1.shoot(board, 0)
 
 	l2 := l.mutate(false)
-	return sum + l2.shoot(board, sum)
+	sum += l2.shoot(board, 0)
+
+	seen[l.posStr()] = sum
+	return sum
+}
+
+func (l *laser) posStr() string {
+	return strconv.Itoa(l.x) + "," + strconv.Itoa(l.y)
 }
 
 func (l *laser) mutate(left bool) *laser {
@@ -51,12 +61,12 @@ func (l *laser) shoot(lines []string, sum int) int {
 	for {
 		board[l.y] = board[l.y][:l.x] + "|" + board[l.y][l.x+1:]
 		lines[l.y] = lines[l.y][:l.x] + "|" + lines[l.y][l.x+1:]
-		for _, b := range lines {
-			fmt.Println(b)
-		}
+		// for _, b := range lines {
+		// 	fmt.Println(b)
+		// }
 
 		l.move(0, 1)
-		time.Sleep(10 * time.Millisecond)
+		// time.Sleep(1 * time.Millisecond)
 		if l.y == len(board)-1 {
 			sum++
 			return sum
